@@ -126,6 +126,31 @@ h2{color:#1a5f7a;margin-bottom:14px}
 .modal{background:#fff;border-radius:15px;padding:26px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;margin:16px}
 textarea{width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:.86rem;resize:vertical}
 select{padding:7px 11px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:.86rem;background:#fff}
+/* REPORT / EDIT ACTIONS */
+.fb-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px dashed rgba(0,0,0,.13)}
+.btn-report{background:#fff;color:#b45309;border:1.5px solid #f59e0b}
+.btn-report:hover{background:#fef3c7}
+.report-card{background:#fff;border-radius:11px;padding:14px;margin-bottom:10px;border-left:4px solid #f59e0b;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.report-card.resolved{border-left-color:#16a34a;opacity:.72}
+.report-meta{font-size:.76rem;color:#64748b;margin-top:6px}
+.report-comment{background:#f8fafc;border-radius:8px;padding:9px 11px;margin-top:8px;font-size:.85rem;line-height:1.55;white-space:pre-wrap}
+.log-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.83rem}
+.log-time{color:#64748b;white-space:nowrap;font-size:.78rem;min-width:104px}
+.log-reason{background:#fffbeb;border-left:3px solid #f59e0b;padding:5px 9px;border-radius:0 6px 6px 0;margin-top:4px;font-size:.8rem}
+.badge-open{background:#fef3c7;color:#92400e}
+.badge-resolved{background:#dcfce7;color:#166534}
+.chg{font-family:ui-monospace,monospace;font-size:.78rem;background:#f1f5f9;padding:1px 6px;border-radius:5px}
+.qlink{color:#1a5f7a;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.qlink:hover{color:#0e7490}
+.case-card.flash{animation:flashCard 2.4s ease-out;border-color:#f59e0b!important}
+@keyframes flashCard{0%,55%{background:#fef3c7;box-shadow:0 0 0 3px #fcd34d}100%{background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.07)}}
+.src-box{background:#f1f5f9;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:.82rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* PASSWORD MODAL */
+.pw-user{background:#f8fafc;border-radius:9px;padding:11px;margin-bottom:14px;font-size:.87rem}
+.pw-result{background:#f0fdf4;border:2px solid #22c55e;border-radius:10px;padding:14px;text-align:center;margin-top:12px}
+.pw-code{font-family:ui-monospace,'SF Mono',monospace;font-size:1.5rem;font-weight:800;letter-spacing:2px;color:#166534;background:#fff;padding:10px 16px;border-radius:8px;display:inline-block;margin:8px 0;border:1.5px dashed #86efac;user-select:all}
+.pw-hint{font-size:.76rem;color:#64748b;margin-top:5px}
+.pw-toggle{font-size:.78rem;color:#1a5f7a;cursor:pointer;text-decoration:underline;margin-top:5px;display:inline-block}
 /* LOADING OVERLAY */
 #loading-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1a5f7a 0%,#2d8a7c 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;color:#fff;transition:opacity .3s}
 #loading-overlay.hidden{opacity:0;pointer-events:none}
@@ -275,6 +300,41 @@ select{padding:7px 11px;border:1.5px solid #e2e8f0;border-radius:8px;font-family
 </div>
 </div>
 
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="pass-modal">
+<div class="modal" style="max-width:440px">
+  <div class="flex-between" style="margin-bottom:14px"><h2 style="margin:0">🔑 ตั้งรหัสผ่านใหม่</h2><button class="btn btn-secondary btn-sm" onclick="closePassModal()">✕</button></div>
+  <div id="pass-body"></div>
+</div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="report-modal">
+<div class="modal" style="max-width:480px">
+  <div class="flex-between" style="margin-bottom:14px"><h2 style="margin:0">🚩 แย้งเฉลย</h2><button class="btn btn-secondary btn-sm" onclick="closeReport()">✕</button></div>
+  <div id="report-body"></div>
+</div>
+</div>
+
+<!-- REPORTS PAGE (admin) -->
+<div id="page-reports" class="page">
+<nav><div class="brand">🏥 Admin</div><div class="nav-right"><button onclick="showPage('page-home')">🏠 หน้าหลัก</button></div></nav>
+<div class="container">
+  <h2>🚩 ความเห็นแย้งเฉลย</h2>
+  <div class="month-tabs" id="reports-filter"></div>
+  <div id="reports-content"></div>
+</div>
+</div>
+
+<!-- EDIT LOG PAGE (admin) -->
+<div id="page-editlog" class="page">
+<nav><div class="brand">🏥 Admin</div><div class="nav-right"><button onclick="showPage('page-home')">🏠 หน้าหลัก</button></div></nav>
+<div class="container">
+  <h2>📜 ประวัติการแก้ไขโจทย์</h2>
+  <div id="editlog-content"></div>
+</div>
+</div>
+
 <script>
 // ============================================================
 // FIREBASE CONFIG — วาง URL จาก Firebase Console ที่นี่
@@ -286,6 +346,8 @@ const FIREBASE_URL='https://triagekearn-jnh-default-rtdb.asia-southeast1.firebas
 // ============================================================
 // CONSTANTS
 // ============================================================
+// เพิ่มเลขนี้ทุกครั้งที่แก้ DEFAULT_QUESTIONS → บังคับให้ทุกเครื่องโหลดชุดใหม่
+const QUESTIONS_VERSION=3;
 const LEVEL_ORDER={R:5,E:4,U:3,L:2,N:1};
 const LEVEL_NAME={R:'Resuscitation',E:'Emergency',U:'Urgent',L:'Less-urgent',N:'Non-urgent'};
 const LEVEL_WAIT={R:'ทันที (0 นาที)',E:'ภายใน 15 นาที',U:'ภายใน 30 นาที',L:'ภายใน 60 นาที',N:'ภายใน 120 นาที'};
@@ -1634,8 +1696,6 @@ keyPoints:['Mild sunburn: cool water compress + moisturizer (aloe vera) + NSAIDs
 // ============================================================
 const DB_PATH=`${FIREBASE_URL}/triagelearn`;
 const CLOUD_ENABLED=!FIREBASE_URL.includes('YOUR-PROJECT');
-// bump เลขนี้ทุกครั้งที่แก้ไข/เพิ่มข้อสอบ เพื่อบังคับให้ทุกเครื่องโหลดชุดล่าสุด (override cloud/localStorage เดิม)
-const QUESTIONS_VERSION=2;
 
 function showCloudStatus(msg,type,ms=2500){
   const el=document.getElementById('cloud-status');
@@ -1646,7 +1706,19 @@ function showCloudStatus(msg,type,ms=2500){
 const S={
   users:()=>JSON.parse(localStorage.getItem('triage_users')||'[]'),
   results:()=>JSON.parse(localStorage.getItem('triage_results')||'[]'),
-  questions:()=>JSON.parse(localStorage.getItem('triage_questions')||'null')||DEFAULT_QUESTIONS,
+  questions(){
+    const savedVer=parseInt(localStorage.getItem('triage_qver')||'0');
+    // ถ้า version เก่ากว่าโค้ด → ทิ้งชุดเก่า ใช้ชุดใหม่จากไฟล์
+    if(savedVer<QUESTIONS_VERSION){
+      localStorage.removeItem('triage_questions');
+      localStorage.setItem('triage_qver',String(QUESTIONS_VERSION));
+      return DEFAULT_QUESTIONS;
+    }
+    return JSON.parse(localStorage.getItem('triage_questions')||'null')||DEFAULT_QUESTIONS;
+  },
+
+  reports:()=>JSON.parse(localStorage.getItem('triage_reports')||'[]'),
+  editlog:()=>JSON.parse(localStorage.getItem('triage_editlog')||'[]'),
 
   saveUsers(u){
     localStorage.setItem('triage_users',JSON.stringify(u));
@@ -1656,9 +1728,25 @@ const S={
     localStorage.setItem('triage_results',JSON.stringify(r));
     this._push('results',r);
   },
+  saveReports(r){
+    localStorage.setItem('triage_reports',JSON.stringify(r));
+    this._push('reports',r);
+  },
+  saveEditlog(l){
+    localStorage.setItem('triage_editlog',JSON.stringify(l));
+    this._push('editlog',l);
+  },
+  addEditLog(entry){
+    const log=this.editlog();
+    log.push({id:'el'+Date.now(),date:new Date().toISOString(),
+      userId:currentUser?.id,userName:currentUser?.name||'-',...entry});
+    this.saveEditlog(log);
+  },
   saveQuestions(q){
     localStorage.setItem('triage_questions',JSON.stringify(q));
+    localStorage.setItem('triage_qver',String(QUESTIONS_VERSION));
     this._push('questions',q);
+    this._push('qver',QUESTIONS_VERSION);
   },
 
   async _push(key,data){
@@ -1680,8 +1768,22 @@ const S={
         localStorage.setItem('triage_users',JSON.stringify(data.users));
       if(data.results&&Array.isArray(data.results))
         localStorage.setItem('triage_results',JSON.stringify(data.results));
-      if(data.questions&&Array.isArray(data.questions)&&data.questions.length>0)
+      if(data.reports&&Array.isArray(data.reports))
+        localStorage.setItem('triage_reports',JSON.stringify(data.reports));
+      if(data.editlog&&Array.isArray(data.editlog))
+        localStorage.setItem('triage_editlog',JSON.stringify(data.editlog));
+      // รับโจทย์จาก cloud เฉพาะเมื่อ version ตรงกับโค้ดนี้เท่านั้น
+      const cloudVer=parseInt(data.qver||0);
+      if(cloudVer>=QUESTIONS_VERSION&&data.questions&&Array.isArray(data.questions)&&data.questions.length>0){
         localStorage.setItem('triage_questions',JSON.stringify(data.questions));
+        localStorage.setItem('triage_qver',String(cloudVer));
+      } else {
+        // cloud มีชุดเก่า → ทิ้ง แล้วอัปโหลดชุดใหม่ขึ้นไปแทน
+        localStorage.removeItem('triage_questions');
+        localStorage.setItem('triage_qver',String(QUESTIONS_VERSION));
+        this._push('questions',DEFAULT_QUESTIONS);
+        this._push('qver',QUESTIONS_VERSION);
+      }
       return true;
     }catch(e){return false;}
   }
@@ -1763,18 +1865,24 @@ function showHome(){
   const sub=document.getElementById('home-sub');
   const ml=getCurrentMonthLabel();
   const mq=getMonthlyQuestions(currentUser.id);
-  const mk=`triage_monthly_${currentUser.id}_${new Date().getFullYear()}-${new Date().getMonth()+1}`;
-  const done=S.results().filter(r=>r.userId===currentUser.id&&(r.monthKey===mk||getMonthKey(r.date)===mk.replace('triage_monthly_'+currentUser.id+'_','')));
-  sub.textContent=`หน่วยงาน: ${currentUser.unit} | เดือน: ${ml} | โจทย์เดือนนี้ ${mq.length} ข้อ (ทำไปแล้ว ${done.length} ครั้ง)`;
+  const total=S.questions().length;
+  const thisMonth=getMonthKey(new Date());
+  const done=S.results().filter(r=>r.userId===currentUser.id&&(r.monthKey||getMonthKey(r.date))===thisMonth);
+  sub.textContent=`หน่วยงาน: ${currentUser.unit} | เดือน: ${ml} | คลังโจทย์ ${total} ข้อ · เดือนนี้สุ่มมา ${mq.length} ข้อ (ทำไปแล้ว ${done.length} ครั้ง)`;
   const grid=document.getElementById('home-grid');
   let cards=`
-    <div class="home-card" onclick="startQuiz()"><div class="hc-icon">📝</div><div class="hc-title">ทำแบบทดสอบ</div><div class="hc-desc">สุ่ม 10 ข้อ/เดือน จาก 40 โจทย์ทั้งหมด</div></div>
+    <div class="home-card" onclick="startQuiz()"><div class="hc-icon">📝</div><div class="hc-title">ทำแบบทดสอบ</div><div class="hc-desc">สุ่ม 10 ข้อ/เดือน จากคลัง ${total} โจทย์</div></div>
     <div class="home-card" onclick="showHistory()"><div class="hc-icon">📊</div><div class="hc-title">ผลคะแนนย้อนหลัง</div><div class="hc-desc">ดูผลรายเดือนของตัวเอง</div></div>`;
-  if(isAdmin) cards+=`
+  if(isAdmin){
+    const openR=S.reports().filter(r=>r.status==='open').length;
+    cards+=`
     <div class="home-card admin-card" onclick="showOverview()"><div class="hc-icon">📈</div><div class="hc-title">ภาพรวมแผนก</div><div class="hc-desc">สถิติรายแผนกรายเดือน</div></div>
     <div class="home-card admin-card" onclick="showIndividual()"><div class="hc-icon">👤</div><div class="hc-title">รายบุคคล</div><div class="hc-desc">ผลคะแนนรายคนรายเดือน</div></div>
-    <div class="home-card admin-card" onclick="showCases()"><div class="hc-icon">✏️</div><div class="hc-title">แก้ไขโจทย์</div><div class="hc-desc">จัดการ 40 โจทย์ทั้งหมด</div></div>
+    <div class="home-card admin-card" onclick="showCases()"><div class="hc-icon">✏️</div><div class="hc-title">แก้ไขโจทย์</div><div class="hc-desc">จัดการคลัง ${total} โจทย์</div></div>
+    <div class="home-card admin-card" onclick="showReports()"><div class="hc-icon">🚩</div><div class="hc-title">ความเห็นแย้งเฉลย${openR?` <span class="badge badge-open">${openR}</span>`:''}</div><div class="hc-desc">${openR?`มี ${openR} รายการรอตรวจสอบ`:'ไม่มีรายการค้าง'}</div></div>
+    <div class="home-card admin-card" onclick="showEditLog()"><div class="hc-icon">📜</div><div class="hc-title">ประวัติการแก้ไข</div><div class="hc-desc">ใครแก้อะไร เมื่อไร เพราะอะไร</div></div>
     <div class="home-card admin-card" onclick="showUsers()"><div class="hc-icon">👥</div><div class="hc-title">จัดการผู้ใช้</div><div class="hc-desc">เพิ่ม/ลบ/แก้ไขบัญชีผู้ใช้</div></div>`;
+  }
   grid.innerHTML=cards;
   showPage('page-home');
 }
@@ -1784,9 +1892,10 @@ function showHome(){
 // ============================================================
 function getMonthlyQuestions(userId){
   const now=new Date();
-  const mk=`triage_monthly_${userId}_${now.getFullYear()}-${now.getMonth()+1}`;
-  const stored=JSON.parse(localStorage.getItem(mk)||'null');
   const all=S.questions();
+  // ผูก key กับ version ด้วย → เปลี่ยนชุดโจทย์ = สุ่มใหม่ทันที
+  const mk=`triage_monthly_v${QUESTIONS_VERSION}_${userId}_${now.getFullYear()}-${now.getMonth()+1}`;
+  const stored=JSON.parse(localStorage.getItem(mk)||'null');
   if(stored&&stored.length===10){
     const qs=stored.map(id=>all.find(q=>q.id===id)).filter(Boolean);
     if(qs.length===10) return qs;
@@ -1924,8 +2033,68 @@ function selectAnswer(chosen){
       <b>ESI:</b> ${ex.esiLevel}</p>
       <div style="margin-top:8px">${ex.keyPoints.map(k=>`<div class="key-point">${k}</div>`).join('')}</div>`;
   }
+  // แถบ report / edit ท้ายเฉลย
+  fb.innerHTML+=`<div class="fb-actions" id="fb-actions">
+    ${currentUser.role==='admin'
+      ? `<button class="btn btn-sm btn-secondary" onclick="editCase(${q.id},true)">✏️ แก้ไขโจทย์นี้</button>`
+      : ''}
+    <button class="btn btn-sm btn-report" onclick="openReport(${q.id})">🚩 ไม่เห็นด้วยกับเฉลย</button>
+  </div>`;
   fb.style.display='block';
   document.getElementById('next-btn').style.display='block';
+}
+
+// ============================================================
+// REPORT (ผู้ใช้แย้งเฉลย)
+// ============================================================
+function openReport(qId){
+  const q=S.questions().find(x=>x.id===qId);
+  if(!q) return;
+  document.getElementById('report-modal').classList.add('open');
+  document.getElementById('report-body').innerHTML=`
+    <div style="background:#f8fafc;border-radius:9px;padding:11px;margin-bottom:14px;font-size:.85rem">
+      <b>ข้อ ${q.id}:</b> ${q.patientInfo.caseTitle}<br>
+      <span style="color:#64748b">เฉลยปัจจุบัน: </span><span class="badge badge-${q.correctAnswer}">${q.correctAnswer} — ${LEVEL_NAME[q.correctAnswer]}</span>
+    </div>
+    <div class="form-group"><label>คุณคิดว่าควรเป็นระดับใด?</label>
+      <select id="rp-level" style="width:100%">
+        <option value="">— ไม่ระบุ (แย้งเหตุผล/เนื้อหาอื่น) —</option>
+        ${['R','E','U','L','N'].map(l=>`<option value="${l}" ${l===q.correctAnswer?'disabled':''}>${l} — ${LEVEL_NAME[l]}${l===q.correctAnswer?' (เฉลยเดิม)':''}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label>เหตุผล / ความเห็นของคุณ <span style="color:#dc2626">*</span></label>
+      <textarea id="rp-comment" rows="4" placeholder="เช่น ผู้ป่วยมี SpO₂ 90% ร่วมกับพูดไม่ครบประโยค ตาม MOPH ควรเป็น Level E ไม่ใช่ U เพราะ..."></textarea></div>
+    <div class="err" id="rp-err"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" onclick="submitReport(${q.id})">📨 ส่งความเห็น</button>
+      <button class="btn btn-secondary" onclick="closeReport()">ยกเลิก</button>
+    </div>`;
+}
+function closeReport(){document.getElementById('report-modal').classList.remove('open');}
+
+function submitReport(qId){
+  const comment=document.getElementById('rp-comment').value.trim();
+  const err=document.getElementById('rp-err');
+  if(comment.length<10){err.textContent='กรุณาอธิบายเหตุผลอย่างน้อย 10 ตัวอักษร';err.style.display='block';return;}
+  const q=S.questions().find(x=>x.id===qId);
+  const reports=S.reports();
+  reports.push({
+    id:'rp'+Date.now(),
+    qId,
+    caseTitle:q.patientInfo.caseTitle,
+    currentAnswer:q.correctAnswer,
+    suggestedAnswer:document.getElementById('rp-level').value||null,
+    comment,
+    userId:currentUser.id,
+    userName:currentUser.name,
+    unit:currentUser.unit,
+    date:new Date().toISOString(),
+    status:'open'
+  });
+  S.saveReports(reports);
+  closeReport();
+  const el=document.getElementById('fb-actions');
+  if(el) el.innerHTML='<span style="font-size:.82rem;color:#16a34a;font-weight:600">✅ ส่งความเห็นเรียบร้อย ขอบคุณครับ — admin จะตรวจสอบให้</span>';
 }
 
 function nextQuestion(){
@@ -2158,8 +2327,12 @@ function showCases(){
     <div style="text-align:center;color:#0369a1;font-weight:700;font-size:1rem">➕ เพิ่มโจทย์ใหม่</div>
     <div style="text-align:center;color:#64748b;font-size:.8rem;margin-top:3px">มีโจทย์ทั้งหมด ${qs.length} ข้อ</div>
   </div>`;
+  const reports=S.reports();
+  const log=S.editlog();
   qs.forEach(q=>{
-    html+=`<div class="card" style="padding:14px">
+    const openR=reports.filter(r=>r.qId===q.id&&r.status==='open').length;
+    const edits=log.filter(l=>l.qId===q.id&&l.action==='edit').length;
+    html+=`<div class="card case-card" id="case-${q.id}" style="padding:14px${openR?';border-left:4px solid #f59e0b':''}">
       <div class="flex-between">
         <div><span class="badge badge-${q.correctAnswer}">${q.correctAnswer}</span> <b>ข้อ ${q.id}</b> — ${q.patientInfo.caseTitle}</div>
         <div style="display:flex;gap:7px">
@@ -2167,7 +2340,11 @@ function showCases(){
           <button class="btn btn-danger btn-sm" onclick="deleteCase(${q.id})">🗑</button>
         </div>
       </div>
-      <div style="font-size:.8rem;color:#64748b;margin-top:5px">${q.explanation.diagnosis} | Pain: ${q.patientInfo.vitals.pain||0}/10</div>
+      <div style="font-size:.8rem;color:#64748b;margin-top:5px">
+        ${q.explanation.diagnosis} | Pain: ${q.patientInfo.vitals.pain||0}/10
+        ${openR?` · <span class="badge badge-open" style="cursor:pointer" onclick="showReports()">🚩 ${openR} ความเห็นแย้ง</span>`:''}
+        ${edits?` · <span class="qlink" style="font-weight:400" onclick="showEditLog(${q.id})">แก้ไขแล้ว ${edits} ครั้ง</span>`:''}
+      </div>
     </div>`;
   });
   document.getElementById('cases-content').innerHTML=html;
@@ -2258,6 +2435,8 @@ function saveNewCase(){
   };
   qs.push(newQ);
   S.saveQuestions(qs);
+  S.addEditLog({action:'add',qId:newQ.id,caseTitle:title,reason:'เพิ่มโจทย์ใหม่',
+    changes:[{field:'เฉลย',from:'—',to:newQ.correctAnswer},{field:'Diagnosis',from:'—',to:dx}]});
   closeModal();showCases();
 }
 
@@ -2265,64 +2444,246 @@ function deleteCase(id){
   const qs=S.questions();
   const q=qs.find(x=>x.id===id);
   if(!confirm(`ลบโจทย์ข้อ ${id}: "${q?.patientInfo?.caseTitle}"?`)) return;
+  const reason=prompt('เหตุผลที่ลบโจทย์ข้อนี้?');
+  if(!reason||reason.trim().length<5){alert('ต้องระบุเหตุผล (อย่างน้อย 5 ตัวอักษร)');return;}
   S.saveQuestions(qs.filter(x=>x.id!==id));
+  S.addEditLog({action:'delete',qId:id,caseTitle:q?.patientInfo?.caseTitle||'-',reason:reason.trim(),
+    changes:[{field:'สถานะ',from:'มีอยู่',to:'ถูกลบ'}]});
   showCases();
 }
-function editCase(id){
+
+// ============================================================
+// REPORTS PAGE (admin)
+// ============================================================
+let reportFilter='open';
+function showReports(){
+  const all=S.reports();
+  const counts={open:all.filter(r=>r.status==='open').length,resolved:all.filter(r=>r.status!=='open').length,all:all.length};
+  document.getElementById('reports-filter').innerHTML=`
+    <div class="month-tab ${reportFilter==='open'?'active':''}" onclick="setReportFilter('open')">รอตรวจสอบ (${counts.open})</div>
+    <div class="month-tab ${reportFilter==='resolved'?'active':''}" onclick="setReportFilter('resolved')">ดำเนินการแล้ว (${counts.resolved})</div>
+    <div class="month-tab ${reportFilter==='all'?'active':''}" onclick="setReportFilter('all')">ทั้งหมด (${counts.all})</div>`;
+  const list=all.filter(r=>reportFilter==='all'?true:reportFilter==='open'?r.status==='open':r.status!=='open')
+                .sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('reports-content').innerHTML=list.length?list.map(r=>{
+    const dt=new Date(r.date).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const open=r.status==='open';
+    const q=S.questions().find(x=>x.id===r.qId);
+    const gone=!q;
+    return `<div class="report-card ${open?'':'resolved'}">
+      <div class="flex-between">
+        <div style="font-weight:700;font-size:.9rem">
+          ${gone?`<span style="color:#94a3b8">ข้อ ${r.qId} (ถูกลบแล้ว)</span>`
+                :`<span class="qlink" onclick="gotoCase(${r.qId})">📄 ข้อ ${r.qId}</span> — ${r.caseTitle}`}
+        </div>
+        <span class="badge ${open?'badge-open':'badge-resolved'}">${open?'รอตรวจสอบ':'ดำเนินการแล้ว'}</span>
+      </div>
+      <div style="margin-top:7px;font-size:.85rem">
+        เฉลยตอนที่แย้ง <span class="badge badge-${r.currentAnswer}">${r.currentAnswer}</span>
+        ${r.suggestedAnswer?` → ผู้แย้งเสนอ <span class="badge badge-${r.suggestedAnswer}">${r.suggestedAnswer}</span>`:' <span style="color:#64748b">(ไม่ได้เสนอระดับใหม่)</span>'}
+        ${q&&q.correctAnswer!==r.currentAnswer?` · <span style="color:#16a34a;font-weight:600">ตอนนี้แก้เป็น <span class="badge badge-${q.correctAnswer}">${q.correctAnswer}</span> แล้ว</span>`:''}
+      </div>
+      <div class="report-comment">${r.comment}</div>
+      <div class="report-meta">👤 ${r.userName} (${r.unit||'-'}) · 🕐 ${dt}</div>
+      ${q?`<div class="src-box">
+        <span style="color:#64748b">โจทย์ต้นทาง:</span>
+        <b>${q.patientInfo.caseTitle}</b>
+        <span class="info-tag">${q.patientInfo.age} ปี ${q.patientInfo.gender}</span>
+        <span class="info-tag">Pain ${q.patientInfo.vitals.pain||0}/10</span>
+        <span class="qlink" onclick="gotoCase(${r.qId})">ดูในคลังโจทย์ →</span>
+      </div>`:''}
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+        ${q?`<button class="btn btn-secondary btn-sm" onclick="editCase(${r.qId})">✏️ แก้ไขโจทย์ข้อ ${r.qId}</button>`:''}
+        ${open
+          ?`<button class="btn btn-sm" style="background:#dcfce7;color:#166534" onclick="resolveReport('${r.id}')">✔️ ทำเครื่องหมายว่าตรวจแล้ว</button>`
+          :`<button class="btn btn-secondary btn-sm" onclick="reopenReport('${r.id}')">↩ เปิดกลับ</button>`}
+        <button class="btn btn-danger btn-sm" onclick="deleteReport('${r.id}')">🗑</button>
+      </div>
+      ${r.adminNote?`<div class="log-reason">📝 ${r.adminNote}${r.resolvedBy?` — โดย ${r.resolvedBy}`:''}</div>`:''}
+    </div>`;
+  }).join(''):'<div class="card" style="text-align:center;color:#64748b">ไม่มีรายการในหมวดนี้</div>';
+  showPage('page-reports');
+}
+function setReportFilter(f){reportFilter=f;showReports();}
+
+// ไปที่โจทย์ต้นทางในคลัง แล้ว highlight ให้เห็นชัด
+function gotoCase(qId){
+  showCases();
+  setTimeout(()=>{
+    const el=document.getElementById('case-'+qId);
+    if(!el){alert('ไม่พบโจทย์ข้อนี้ (อาจถูกลบไปแล้ว)');return;}
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  },60);
+}
+function resolveReport(id){
+  const note=prompt('บันทึกผลการตรวจสอบ (ไม่บังคับ)\nเช่น "ตรวจสอบแล้ว เฉลยเดิมถูกต้อง เพราะ..." หรือ "แก้เฉลยตามที่แย้งแล้ว"');
+  if(note===null) return;
+  const rs=S.reports();const r=rs.find(x=>x.id===id);
+  if(!r) return;
+  r.status='resolved';r.adminNote=note.trim()||null;
+  r.resolvedBy=currentUser.name;r.resolvedAt=new Date().toISOString();
+  S.saveReports(rs);showReports();
+}
+function reopenReport(id){
+  const rs=S.reports();const r=rs.find(x=>x.id===id);
+  if(!r) return;r.status='open';S.saveReports(rs);showReports();
+}
+function deleteReport(id){
+  if(!confirm('ลบรายการนี้?')) return;
+  S.saveReports(S.reports().filter(r=>r.id!==id));showReports();
+}
+
+// ============================================================
+// EDIT LOG PAGE (admin)
+// ============================================================
+function showEditLog(filterQid){
+  let log=S.editlog().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(filterQid) log=log.filter(l=>l.qId===filterQid);
+  const ICON={edit:'✏️',add:'➕',delete:'🗑',password:'🔑'};
+  const ACT={edit:'แก้ไข',add:'เพิ่ม',delete:'ลบ',password:'ตั้งรหัสผ่านใหม่'};
+  const exists=id=>S.questions().some(q=>q.id===id);
+  const head=filterQid
+    ?`<div class="card" style="padding:12px;background:#f0f9ff;border:1px solid #bae6fd;margin-bottom:12px">
+        <div class="flex-between"><div>กำลังดูเฉพาะ <b>ข้อ ${filterQid}</b> (${log.length} รายการ)</div>
+        <button class="btn btn-secondary btn-sm" onclick="showEditLog()">ดูทั้งหมด</button></div></div>`
+    :'';
+  document.getElementById('editlog-content').innerHTML=head+(log.length
+    ?`<div class="card">${log.map(l=>{
+        const dt=new Date(l.date).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+        const isAcct=l.action==='password';
+        const alive=!isAcct&&exists(l.qId);
+        return `<div class="log-row">
+          <div class="log-time">${dt}</div>
+          <div style="flex:1">
+            <div>${ICON[l.action]||'•'} <b>${ACT[l.action]||l.action}</b>
+              ${isAcct?`— ${l.caseTitle}`
+                : `${alive?`<span class="qlink" onclick="gotoCase(${l.qId})">ข้อ ${l.qId}</span>`:`<span style="color:#94a3b8">ข้อ ${l.qId} (ถูกลบ)</span>`}
+                   — ${l.caseTitle}
+                   ${alive?`<button class="btn btn-secondary btn-sm" style="margin-left:6px;padding:2px 9px;font-size:.72rem" onclick="editCase(${l.qId})">✏️ แก้</button>`:''}`}
+            </div>
+            <div style="color:#64748b;font-size:.79rem;margin-top:2px">โดย ${l.userName}</div>
+            ${(l.changes||[]).map(c=>`<div style="margin-top:4px;font-size:.8rem">${c.field}: <span class="chg">${String(c.from).slice(0,60)}</span> → <span class="chg">${String(c.to).slice(0,60)}</span></div>`).join('')}
+            <div class="log-reason">เหตุผล: ${l.reason}</div>
+          </div>
+        </div>`;
+      }).join('')}</div>`
+    :'<div class="card" style="text-align:center;color:#64748b">ยังไม่มีประวัติการแก้ไข</div>');
+  showPage('page-editlog');
+}
+function editCase(id,fromQuiz){
   const qs=S.questions();
   const q=qs.find(x=>x.id===id);
   if(!q) return;
   document.getElementById('edit-modal').querySelector('.modal h2').textContent=`✏️ แก้ไขโจทย์ข้อ ${id}`;
   const v=q.patientInfo.vitals;
+  const esc=s=>String(s==null?'':s).replace(/"/g,'&quot;');
   document.getElementById('edit-form-content').innerHTML=`
-    <div class="form-group"><label>หัวข้อ</label><input id="ef-title" value="${q.patientInfo.caseTitle}"></div>
-    <div class="form-group"><label>Chief Complaint</label><textarea id="ef-cc" rows="2">${q.patientInfo.cc}</textarea></div>
+    <div class="form-group"><label>หัวข้อ</label><input id="ef-title" value="${esc(q.patientInfo.caseTitle)}"></div>
+    <div class="form-group"><label>Chief Complaint</label><textarea id="ef-cc" rows="2">${q.patientInfo.cc||''}</textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group"><label>BT</label><input id="ef-bt" value="${v.bt||''}"></div>
-      <div class="form-group"><label>BP</label><input id="ef-bp" value="${v.bp||''}"></div>
-      <div class="form-group"><label>HR</label><input id="ef-hr" value="${v.hr||''}"></div>
-      <div class="form-group"><label>RR</label><input id="ef-rr" value="${v.rr||''}"></div>
-      <div class="form-group"><label>SpO₂</label><input id="ef-spo2" value="${v.spo2||''}"></div>
-      <div class="form-group"><label>GCS</label><input id="ef-gcs" value="${v.gcs||''}"></div>
-      <div class="form-group"><label>Pain (0-10)</label><input id="ef-pain" type="number" min="0" max="10" value="${v.pain||0}"></div>
+      <div class="form-group"><label>BT</label><input id="ef-bt" value="${esc(v.bt)}"></div>
+      <div class="form-group"><label>BP</label><input id="ef-bp" value="${esc(v.bp)}"></div>
+      <div class="form-group"><label>HR</label><input id="ef-hr" value="${esc(v.hr)}"></div>
+      <div class="form-group"><label>RR</label><input id="ef-rr" value="${esc(v.rr)}"></div>
+      <div class="form-group"><label>SpO₂</label><input id="ef-spo2" value="${esc(v.spo2)}"></div>
+      <div class="form-group"><label>GCS</label><input id="ef-gcs" value="${esc(v.gcs)}"></div>
+      <div class="form-group"><label>Pain (0-10)</label><input id="ef-pain" type="number" min="0" max="10" value="${esc(v.pain||0)}"></div>
     </div>
-    <div class="form-group"><label>Physical Exam</label><textarea id="ef-pe" rows="2">${q.patientInfo.pe}</textarea></div>
-    <div class="form-group"><label>เฉลย (Diagnosis)</label><input id="ef-dx" value="${q.explanation.diagnosis}"></div>
-    <div class="form-group"><label>เหตุผล</label><textarea id="ef-ratio" rows="2">${q.explanation.rationale}</textarea></div>
+    <div class="form-group"><label>Physical Exam</label><textarea id="ef-pe" rows="2">${q.patientInfo.pe||''}</textarea></div>
+    <div class="form-group"><label>เฉลย (Diagnosis)</label><input id="ef-dx" value="${esc(q.explanation.diagnosis)}"></div>
+    <div class="form-group"><label>เหตุผล (Rationale)</label><textarea id="ef-ratio" rows="2">${q.explanation.rationale||''}</textarea></div>
+    <div class="form-group"><label>MOPH Criteria</label><textarea id="ef-moph" rows="2">${q.explanation.mophCriteria||''}</textarea></div>
+    <div class="form-group"><label>ESI Level</label><textarea id="ef-esi" rows="2">${q.explanation.esiLevel||''}</textarea></div>
+    <div class="form-group"><label>Key Points (คั่นด้วย | )</label><textarea id="ef-keys" rows="3">${(q.explanation.keyPoints||[]).join(' | ')}</textarea></div>
     <div class="form-group"><label>คำตอบที่ถูก</label>
-      <select id="ef-ans">${['R','E','U','L','N'].map(l=>`<option value="${l}" ${l===q.correctAnswer?'selected':''}>${l} — ${LEVEL_NAME[l]}</option>`).join('')}</select>
+      <select id="ef-ans" style="width:100%">${['R','E','U','L','N'].map(l=>`<option value="${l}" ${l===q.correctAnswer?'selected':''}>${l} — ${LEVEL_NAME[l]}</option>`).join('')}</select>
     </div>
+    <div class="form-group" style="background:#fffbeb;padding:11px;border-radius:9px;border:1px solid #fcd34d">
+      <label style="color:#92400e">เหตุผลที่แก้ไข <span style="color:#dc2626">*</span></label>
+      <textarea id="ef-reason" rows="2" placeholder="เช่น แก้เฉลยจาก U เป็น E เพราะ SpO₂ 90% + พูดไม่ครบประโยค เข้าเกณฑ์ MOPH L2"></textarea>
+      <div style="font-size:.75rem;color:#92400e;margin-top:5px">บันทึกลงประวัติพร้อมชื่อผู้แก้และเวลา</div>
+    </div>
+    <div class="err" id="ef-err"></div>
     <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="btn btn-primary" onclick="saveCase(${id})">💾 บันทึก</button>
+      <button class="btn btn-primary" onclick="saveCase(${id},${fromQuiz?'true':'false'})">💾 บันทึก</button>
       <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
     </div>`;
   document.getElementById('edit-modal').classList.add('open');
 }
-function saveCase(id){
+
+function saveCase(id,fromQuiz){
+  const reason=document.getElementById('ef-reason').value.trim();
+  const err=document.getElementById('ef-err');
+  if(reason.length<5){err.textContent='กรุณาระบุเหตุผลที่แก้ไข (อย่างน้อย 5 ตัวอักษร)';err.style.display='block';return;}
   const qs=S.questions();
   const idx=qs.findIndex(x=>x.id===id);
   if(idx<0) return;
   const q=qs[idx];
-  q.patientInfo.caseTitle=document.getElementById('ef-title').value;
-  q.patientInfo.cc=document.getElementById('ef-cc').value;
-  q.patientInfo.pe=document.getElementById('ef-pe').value;
-  q.patientInfo.vitals.bt=document.getElementById('ef-bt').value;
-  q.patientInfo.vitals.bp=document.getElementById('ef-bp').value;
-  q.patientInfo.vitals.hr=document.getElementById('ef-hr').value;
-  q.patientInfo.vitals.rr=document.getElementById('ef-rr').value;
-  q.patientInfo.vitals.spo2=document.getElementById('ef-spo2').value;
-  q.patientInfo.vitals.gcs=document.getElementById('ef-gcs').value;
-  q.patientInfo.vitals.pain=document.getElementById('ef-pain').value;
-  q.explanation.diagnosis=document.getElementById('ef-dx').value;
-  q.explanation.rationale=document.getElementById('ef-ratio').value;
-  q.correctAnswer=document.getElementById('ef-ans').value;
+  const g=i=>document.getElementById(i).value;
+  const before={
+    caseTitle:q.patientInfo.caseTitle,answer:q.correctAnswer,diagnosis:q.explanation.diagnosis,
+    rationale:q.explanation.rationale,moph:q.explanation.mophCriteria,esi:q.explanation.esiLevel,
+    keys:(q.explanation.keyPoints||[]).join(' | '),cc:q.patientInfo.cc,pe:q.patientInfo.pe,
+    bt:q.patientInfo.vitals.bt,bp:q.patientInfo.vitals.bp,hr:q.patientInfo.vitals.hr,
+    rr:q.patientInfo.vitals.rr,spo2:q.patientInfo.vitals.spo2,gcs:q.patientInfo.vitals.gcs,pain:q.patientInfo.vitals.pain
+  };
+  q.patientInfo.caseTitle=g('ef-title');
+  q.patientInfo.cc=g('ef-cc');
+  q.patientInfo.pe=g('ef-pe');
+  Object.assign(q.patientInfo.vitals,{bt:g('ef-bt'),bp:g('ef-bp'),hr:g('ef-hr'),rr:g('ef-rr'),spo2:g('ef-spo2'),gcs:g('ef-gcs'),pain:g('ef-pain')});
+  q.explanation.diagnosis=g('ef-dx');
+  q.explanation.rationale=g('ef-ratio');
+  q.explanation.mophCriteria=g('ef-moph');
+  q.explanation.esiLevel=g('ef-esi');
+  q.explanation.keyPoints=g('ef-keys').split('|').map(k=>k.trim()).filter(Boolean);
+  q.correctAnswer=g('ef-ans');
+  q.explanation.correctLevel=`${q.correctAnswer} — ${LEVEL_NAME[q.correctAnswer]}`;
+
+  const after={
+    caseTitle:q.patientInfo.caseTitle,answer:q.correctAnswer,diagnosis:q.explanation.diagnosis,
+    rationale:q.explanation.rationale,moph:q.explanation.mophCriteria,esi:q.explanation.esiLevel,
+    keys:q.explanation.keyPoints.join(' | '),cc:q.patientInfo.cc,pe:q.patientInfo.pe,
+    bt:q.patientInfo.vitals.bt,bp:q.patientInfo.vitals.bp,hr:q.patientInfo.vitals.hr,
+    rr:q.patientInfo.vitals.rr,spo2:q.patientInfo.vitals.spo2,gcs:q.patientInfo.vitals.gcs,pain:q.patientInfo.vitals.pain
+  };
+  const LABEL={caseTitle:'หัวข้อ',answer:'เฉลย',diagnosis:'Diagnosis',rationale:'เหตุผล',moph:'MOPH',esi:'ESI',keys:'Key Points',cc:'CC',pe:'PE',bt:'BT',bp:'BP',hr:'HR',rr:'RR',spo2:'SpO₂',gcs:'GCS',pain:'Pain'};
+  const changes=Object.keys(after)
+    .filter(k=>String(before[k]||'')!==String(after[k]||''))
+    .map(k=>({field:LABEL[k]||k,from:String(before[k]||'(ว่าง)'),to:String(after[k]||'(ว่าง)')}));
+
+  if(changes.length===0){err.textContent='ไม่พบการเปลี่ยนแปลง';err.style.display='block';return;}
+
   S.saveQuestions(qs);
-  closeModal();showCases();
+  S.addEditLog({action:'edit',qId:id,caseTitle:q.patientInfo.caseTitle,reason,changes});
+  closeModal();
+  if(fromQuiz){
+    // อัปเดตโจทย์ในชุดที่กำลังทำอยู่ แล้ว render เฉลยใหม่
+    const i=quizState.questions.findIndex(x=>x.id===id);
+    if(i>=0) quizState.questions[i]=q;
+    const fbEl=document.getElementById('feedback-box');
+    fbEl.innerHTML=`<h4>✅ บันทึกการแก้ไขแล้ว</h4><p>เฉลยใหม่: <b>${q.correctAnswer}</b> — ${LEVEL_NAME[q.correctAnswer]}<br><span style="font-size:.8rem;color:#64748b">แก้ ${changes.length} รายการ · บันทึกลงประวัติแล้ว</span></p>`;
+    fbEl.className='feedback-box correct';
+  } else {
+    // กลับไปหน้าเดิมที่กดแก้มา
+    const cur=document.querySelector('.page.active');
+    if(cur&&cur.id==='page-reports') showReports();
+    else if(cur&&cur.id==='page-editlog') showEditLog();
+    else showCases();
+  }
 }
 function closeModal(){document.getElementById('edit-modal').classList.remove('open');}
 function resetQuestions(){
-  if(confirm('รีเซ็ตโจทย์ทั้งหมดกลับเป็นค่าเริ่มต้น?')){
-    localStorage.removeItem('triage_questions');showCases();
+  if(confirm(`รีเซ็ตโจทย์ทั้งหมดกลับเป็นค่าเริ่มต้น (${DEFAULT_QUESTIONS.length} ข้อ)?\nการแก้ไข/เพิ่มโจทย์เองจะหายไปทั้งหมด`)){
+    localStorage.removeItem('triage_questions');
+    localStorage.setItem('triage_qver',String(QUESTIONS_VERSION));
+    // ล้างชุดสุ่มรายเดือนของทุกคน เพื่อให้สุ่มใหม่จากคลังเต็ม
+    Object.keys(localStorage).filter(k=>k.startsWith('triage_monthly_')).forEach(k=>localStorage.removeItem(k));
+    S._push('questions',DEFAULT_QUESTIONS);
+    S._push('qver',QUESTIONS_VERSION);
+    showCases();
   }
 }
 
@@ -2331,20 +2692,30 @@ function resetQuestions(){
 // ============================================================
 function showUsers(){
   const users=S.users();
-  let html='<div class="card"><table><thead><tr><th>ชื่อ</th><th>Username</th><th>หน่วยงาน</th><th>Role</th><th style="min-width:190px">จัดการ</th></tr></thead><tbody>';
+  const admins=users.filter(u=>u.role==='admin').length;
+  let html=`<div class="stats-grid">
+    <div class="stat-box"><div class="snum">${users.length}</div><div class="slabel">ผู้ใช้ทั้งหมด</div></div>
+    <div class="stat-box green"><div class="snum">${admins}</div><div class="slabel">Admin</div></div>
+    <div class="stat-box amber"><div class="snum">${users.length-admins}</div><div class="slabel">User ทั่วไป</div></div>
+  </div>`;
+  html+='<div class="card"><table><thead><tr><th>ชื่อ</th><th>Username</th><th>หน่วยงาน</th><th>Role</th><th>รหัสผ่านล่าสุด</th><th style="min-width:200px">จัดการ</th></tr></thead><tbody>';
   users.forEach(u=>{
     const isMe=u.id===currentUser.id;
     const isAdmin=u.role==='admin';
+    const pc=u.passwordChangedAt
+      ? `<span style="font-size:.75rem;color:#64748b">${new Date(u.passwordChangedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})}<br>โดย ${u.passwordChangedBy||'-'}</span>`
+      : '<span style="font-size:.75rem;color:#cbd5e1">—</span>';
     html+=`<tr>
-      <td>${u.name}</td>
-      <td>${u.username}</td>
+      <td><b>${u.name}</b>${isMe?' <span style="font-size:.72rem;color:#94a3b8">(คุณ)</span>':''}</td>
+      <td><span class="chg">${u.username}</span></td>
       <td>${u.unit||'-'}</td>
       <td><span class="badge ${isAdmin?'badge-admin':'badge-N'}">${isAdmin?'Admin':'User'}</span></td>
+      <td>${pc}</td>
       <td>
         <div style="display:flex;gap:5px;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" onclick="openChangePass('${u.id}','${u.name}')">🔑 รหัสผ่าน</button>
+          <button class="btn btn-secondary btn-sm" onclick="openChangePass('${u.id}')">🔑 ตั้งรหัสใหม่</button>
           ${!isMe?`<button class="btn btn-sm" style="background:${isAdmin?'#e2e8f0':'#cffafe'};color:${isAdmin?'#1e293b':'#155e75'}" onclick="toggleAdmin('${u.id}')">${isAdmin?'↓ User':'↑ Admin'}</button>`:''}
-          ${!isMe?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">🗑</button>`:'<span style="font-size:.75rem;color:#94a3b8">(ตัวเอง)</span>'}
+          ${!isMe?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">🗑</button>`:''}
         </div>
       </td></tr>`;
   });
@@ -2364,19 +2735,81 @@ function toggleAdmin(id){
   showUsers();
 }
 
-function openChangePass(id,name){
-  const newPass=prompt(`ตั้งรหัสผ่านใหม่สำหรับ "${name}"\n(อย่างน้อย 6 ตัวอักษร)`);
-  if(!newPass) return;
-  if(newPass.length<6){alert('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');return;}
+function openChangePass(id){
+  const u=S.users().find(x=>x.id===id);
+  if(!u) return;
+  document.getElementById('pass-body').innerHTML=`
+    <div class="pw-user">
+      <b>${u.name}</b> <span class="badge ${u.role==='admin'?'badge-admin':'badge-N'}">${u.role==='admin'?'Admin':'User'}</span><br>
+      <span style="color:#64748b">Username:</span> <b>${u.username}</b> · <span style="color:#64748b">หน่วยงาน:</span> ${u.unit||'-'}
+      ${u.id===currentUser.id?'<div style="color:#b45309;font-size:.79rem;margin-top:5px">⚠️ นี่คือบัญชีของคุณเอง</div>':''}
+    </div>
+    <div class="form-group">
+      <label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label>
+      <input id="pw-new" type="text" placeholder="พิมพ์รหัสผ่านใหม่" autocomplete="new-password">
+      <span class="pw-toggle" onclick="genTempPass()">🎲 สุ่มรหัสชั่วคราวให้</span>
+    </div>
+    <div class="form-group">
+      <label>ยืนยันรหัสผ่านใหม่</label>
+      <input id="pw-confirm" type="text" placeholder="พิมพ์ซ้ำอีกครั้ง" onkeydown="if(event.key==='Enter')submitNewPass('${id}')">
+    </div>
+    <div class="err" id="pw-err"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-primary" onclick="submitNewPass('${id}')">💾 บันทึกรหัสผ่านใหม่</button>
+      <button class="btn btn-secondary" onclick="closePassModal()">ยกเลิก</button>
+    </div>`;
+  document.getElementById('pass-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('pw-new').focus(),80);
+}
+function closePassModal(){document.getElementById('pass-modal').classList.remove('open');}
+
+function genTempPass(){
+  // ตัดอักษรที่สับสนออก (0/O, 1/l/I)
+  const chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let p='';for(let i=0;i<8;i++) p+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('pw-new').value=p;
+  document.getElementById('pw-confirm').value=p;
+  const err=document.getElementById('pw-err');err.style.display='none';
+}
+
+function submitNewPass(id){
+  const np=document.getElementById('pw-new').value.trim();
+  const cf=document.getElementById('pw-confirm').value.trim();
+  const err=document.getElementById('pw-err');
+  const show=t=>{err.textContent=t;err.style.display='block';};
+  if(np.length<6) return show('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+  if(np!==cf) return show('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
   const users=S.users();
   const u=users.find(x=>x.id===id);
-  if(!u) return;
-  u.password=newPass;
+  if(!u) return show('ไม่พบผู้ใช้นี้');
+  u.password=np;
+  u.passwordChangedAt=new Date().toISOString();
+  u.passwordChangedBy=currentUser.name;
   S.saveUsers(users);
-  // Update remember-me if it was this user
+  // ถ้าเครื่องนี้จำรหัสของ user คนนี้ไว้ → อัปเดตตาม
   const saved=JSON.parse(localStorage.getItem('triage_remember')||'null');
-  if(saved&&saved.u===u.username) localStorage.setItem('triage_remember',JSON.stringify({u:u.username,p:newPass}));
-  alert(`เปลี่ยนรหัสผ่านของ "${name}" เรียบร้อยแล้ว`);
+  if(saved&&saved.u===u.username) localStorage.setItem('triage_remember',JSON.stringify({u:u.username,p:np}));
+  S.addEditLog({action:'password',qId:'-',caseTitle:`บัญชี ${u.username} (${u.name})`,
+    reason:'admin ตั้งรหัสผ่านใหม่',changes:[{field:'รหัสผ่าน',from:'••••••',to:'••••••'}]});
+  // แสดงรหัสให้ admin คัดลอกไปแจ้ง
+  document.getElementById('pass-body').innerHTML=`
+    <div class="pw-result">
+      <div style="font-weight:700;color:#166534">✅ ตั้งรหัสผ่านใหม่เรียบร้อย</div>
+      <div style="font-size:.84rem;color:#64748b;margin-top:6px">${u.name} · username: <b>${u.username}</b></div>
+      <div class="pw-code" id="pw-shown">${np}</div>
+      <div class="pw-hint">แตะที่รหัสเพื่อเลือกทั้งหมด แล้วคัดลอกไปแจ้งผู้ใช้</div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:9px" onclick="copyPass('${np.replace(/'/g,"\\'")}')">📋 คัดลอกรหัส</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-primary" onclick="closePassModal();showUsers()">เสร็จสิ้น</button>
+    </div>`;
+}
+
+function copyPass(p){
+  navigator.clipboard?.writeText(p).then(
+    ()=>showCloudStatus('📋 คัดลอกรหัสผ่านแล้ว','ok'),
+    ()=>alert('คัดลอกไม่สำเร็จ กรุณาเลือกข้อความเอง: '+p)
+  );
 }
 
 function deleteUser(id){
